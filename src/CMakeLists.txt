@@ -53,6 +53,6 @@ else()
   )
 endif()
 
-target_link_libraries(qupsc PRIVATE Qt5::Widgets Qt5::Network)
+target_link_libraries(qupsc PRIVATE Qt5::Widgets Qt5::Network nutclient)
 
 qt5_create_translation(QM_FILES ${CMAKE_SOURCE_DIR} ${TS_FILES})
