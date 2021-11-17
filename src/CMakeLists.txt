@@ -35,6 +35,8 @@ find_package(Qt5 COMPONENTS Widgets Network LinguistTools REQUIRED)
 
 set(TS_FILES qupsc_ru_RU.ts)
 
+include_directories(../nutclientdll)
+
 if(ANDROID)
   add_library(qupsc SHARED
     main.cpp
@@ -46,6 +48,8 @@ if(ANDROID)
 else()
   add_executable(qupsc
     main.cpp
+    nutsocket.cpp
+    nutsocket.h
     mainwindow.cpp
     mainwindow.h
     mainwindow.ui
