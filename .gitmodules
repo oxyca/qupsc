@@ -1,0 +1,3 @@
+[submodule "nutclientdll"]
+	path = nutclientdll
+	url = https://github.com/andrei-b/nutclientdll.git
