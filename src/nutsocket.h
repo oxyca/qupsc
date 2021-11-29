@@ -3,8 +3,9 @@
 
 #include <nutclient.h>
 #include <QTcpSocket>
+#include <memory>
 
-namespace Engine {
+namespace engine {
 
 class NutSocket : public nut::AbstractSocket
 {
@@ -21,6 +22,8 @@ public:
 private:
      QTcpSocket _socket;
 };
+
+std::shared_ptr<nut::AbstractSocket> SocketFactory();
 
 }
 #endif // NUTSSOCKET_H

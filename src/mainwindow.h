@@ -7,6 +7,9 @@ QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
 
+namespace engine {
+class NetworkThread;
+}
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
@@ -17,5 +20,6 @@ public:
 
 private:
     Ui::MainWindow *ui;
+    engine::NetworkThread * _thread;
 };
 #endif // MAINWINDOW_H

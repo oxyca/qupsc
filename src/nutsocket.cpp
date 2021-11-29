@@ -1,7 +1,7 @@
 #include "nutsocket.h"
 #include <QString>
 
-namespace  Engine {
+namespace  engine {
 
 NutSocket::NutSocket()
 {
@@ -61,6 +61,10 @@ void NutSocket::write(const std::string &s)
             throw nut::IOException("Writing string failed");
         nextPos += bw;
     }
+}
+
+std::shared_ptr<nut::AbstractSocket> SocketFactory() {
+    return std::shared_ptr<nut::AbstractSocket>(new NutSocket());
 }
 
 } // namespace Engine
