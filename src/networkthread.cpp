@@ -1,6 +1,7 @@
 #include "networkthread.h"
 #include <nutclient.h>
 #include <list>
+#include <QDebug>
 
 namespace engine {
 
@@ -35,10 +36,10 @@ void NetworkThread::run()
     std::list<std::string> knownDevices;
     while (!_stopped) {
         _reload = false;
-        nut::TcpClient client(_host.toStdString(), _port);
+        nut::TcpClient client;
         try {
             emit connecting();
-            client.connect();
+            client.connect(_host.toStdString(), _port);
             emit connected();
             emit waiting();
             auto devices = client.getDeviceNames();
@@ -52,8 +53,10 @@ void NetworkThread::run()
             }
         } catch(nut::NutException & e) {
             emit error(QString::fromLatin1(e.str().data(), e.str().size()));
+            qDebug() << QString::fromLatin1(e.str().data(), e.str().size());
         }
         client.disconnect();
+        while (client.isConnected());
         emit disconnected();
     }
     deleteLater();
