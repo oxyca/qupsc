@@ -18,7 +18,8 @@ void NutSocket::connect(const std::string &host, int port)
 {
     _socket.connectToHost(QString::fromUtf8(host.data(), host.size()), port);
     if (!_socket.waitForConnected()) {
-          qDebug("Connection failed");
+        qDebug() << "Connection failed: " << _socket.errorString();
+        throw nut::IOException("Connection failed: " + _socket.errorString().toStdString());
     } else {
         qDebug("Connected");
     }

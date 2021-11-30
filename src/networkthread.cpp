@@ -44,9 +44,12 @@ void NetworkThread::run()
             emit waiting();
             auto devices = client.getDeviceNames();
             for (const auto &device: devices) {
-                if (std::find(knownDevices.begin(), knownDevices.end(), device) == knownDevices.end())
+                if (std::find(knownDevices.begin(), knownDevices.end(), device) == knownDevices.end()) {
                     knownDevices.push_back(device);
-                    emit deviceAdded(QString::fromLatin1(device.data(), device.size()));
+                    auto description = client.getDeviceDescription(device);
+                    emit deviceAdded(QString::fromLatin1(device.data(), device.size()),
+                                     QString::fromLatin1(description.data(), description.size()));
+                }
             }
             while (!_stopped && !_reload) {
                 QThread::sleep(_pollingInterval);
@@ -54,6 +57,12 @@ void NetworkThread::run()
         } catch(nut::NutException & e) {
             emit error(QString::fromLatin1(e.str().data(), e.str().size()));
             qDebug() << QString::fromLatin1(e.str().data(), e.str().size());
+        }
+        catch(std::exception & e) {
+            qDebug() << QString::fromLatin1(e.what());
+        }
+        catch(...) {
+            qDebug() << "Unknown error";
         }
         client.disconnect();
         while (client.isConnected());

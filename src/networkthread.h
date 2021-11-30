@@ -22,7 +22,7 @@ signals:
     void disconnected();
     void waiting();
     void error(const QString & what);
-    void deviceAdded(const QString & name);
+    void deviceAdded(const QString & name, const QString & description);
     void deviceRemoved(const QString & name);
 protected:
     void run() override;

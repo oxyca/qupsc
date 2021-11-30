@@ -50,6 +50,7 @@ else()
     main.cpp
     nutsocket.cpp
     nutsocket.h
+    commondata.h
     networkthread.cpp
     networkthread.h
     mainwindow.cpp
