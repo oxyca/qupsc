@@ -56,6 +56,9 @@ else()
     mainwindow.cpp
     mainwindow.h
     mainwindow.ui
+    newconnectiondialog.cpp
+    newconnectiondialog.h
+    newconnectiondialog.ui
     ${TS_FILES}
   )
 endif()

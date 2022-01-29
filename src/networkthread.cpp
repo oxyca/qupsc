@@ -1,5 +1,4 @@
 #include "networkthread.h"
-#include <nutclient.h>
 #include <list>
 #include <QDebug>
 
@@ -31,6 +30,19 @@ void NetworkThread::refresh()
     _reload = true;
 }
 
+void NetworkThread::updateKnownDevices(nut::TcpClient & client, std::list<std::string> & knownDevices)
+{
+    auto devices = client.getDeviceNames();
+    for (const auto &device: devices) {
+        if (std::find(knownDevices.begin(), knownDevices.end(), device) == knownDevices.end()) {
+            knownDevices.push_back(device);
+            auto description = client.getDeviceDescription(device);
+            emit deviceAdded(QString::fromLatin1(device.data(), device.size()),
+                             QString::fromLatin1(description.data(), description.size()));
+        }
+    }
+}
+
 void NetworkThread::run()
 {
     std::list<std::string> knownDevices;
@@ -42,15 +54,7 @@ void NetworkThread::run()
             client.connect(_host.toStdString(), _port);
             emit connected();
             emit waiting();
-            auto devices = client.getDeviceNames();
-            for (const auto &device: devices) {
-                if (std::find(knownDevices.begin(), knownDevices.end(), device) == knownDevices.end()) {
-                    knownDevices.push_back(device);
-                    auto description = client.getDeviceDescription(device);
-                    emit deviceAdded(QString::fromLatin1(device.data(), device.size()),
-                                     QString::fromLatin1(description.data(), description.size()));
-                }
-            }
+            updateKnownDevices(client, knownDevices);
             while (!_stopped && !_reload) {
                 QThread::sleep(_pollingInterval);
             }

@@ -12,3 +12,14 @@ NewConnectionDialog::~NewConnectionDialog()
 {
     delete ui;
 }
+
+std::tuple<QString, uint16_t> NewConnectionDialog::getAddressPort()
+{
+    return std::make_tuple(ui->addressLineEdit->text(), ui->portSpinBox->value());
+}
+
+void NewConnectionDialog::accept()
+{
+    emit createNewConnection(ui->addressLineEdit->text(), ui->portSpinBox->value());
+    QDialog::accept();
+}

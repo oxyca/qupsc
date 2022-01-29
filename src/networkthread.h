@@ -1,6 +1,8 @@
 #ifndef NETWORKTHREAD_H
 #define NETWORKTHREAD_H
 
+#include <memory>
+#include <nutclient.h>
 #include <QThread>
 #include <QStringList>
 
@@ -12,6 +14,8 @@ class NetworkThread : public QThread
 public:
     explicit NetworkThread(QObject *parent = nullptr);
     bool isConnected() const;
+    void updateKnownDevices(nut::TcpClient & client, std::list<std::string> & knownDevices);
+
 public slots:
     bool start(const QString & host, quint16 port, quint16 pollingInterval);
     void stop();

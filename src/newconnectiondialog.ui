@@ -17,7 +17,7 @@
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout">
      <item>
-      <widget class="QLineEdit" name="lineEdit">
+      <widget class="QLineEdit" name="addressLineEdit">
        <property name="minimumSize">
         <size>
          <width>100</width>
@@ -30,7 +30,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QSpinBox" name="spinBox">
+      <widget class="QSpinBox" name="portSpinBox">
        <property name="toolTip">
         <string>Port</string>
        </property>

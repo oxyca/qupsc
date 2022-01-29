@@ -17,8 +17,11 @@ class MainWindow : public QMainWindow
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
-
+public slots:
+    void showNewConnectionDialog();
+    void createNewConnection(const QString & address, uint16_t port);
 private:
+
     Ui::MainWindow *ui;
     engine::NetworkThread * _thread;
 };
