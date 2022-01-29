@@ -9,6 +9,11 @@ NetworkThread::NetworkThread(QObject *parent) : QThread(parent)
 
 }
 
+NetworkThread::~NetworkThread()
+{
+    emit deleted(_host);
+}
+
 bool NetworkThread::start(const QString &host, quint16 port, quint16 pollingInterval)
 {
     if (isRunning()) return false;
@@ -47,26 +52,30 @@ void NetworkThread::run()
 {
     std::list<std::string> knownDevices;
     while (!_stopped) {
-        _reload = false;
         nut::TcpClient client;
-        try {
-            emit connecting();
-            client.connect(_host.toStdString(), _port);
-            emit connected();
-            emit waiting();
-            updateKnownDevices(client, knownDevices);
-            while (!_stopped && !_reload) {
-                QThread::sleep(_pollingInterval);
+        while (!_stopped) {
+            try {
+                emit connecting();
+                client.connect(_host.toStdString(), _port);
+                emit connected();
+                emit waiting();
+                updateKnownDevices(client, knownDevices);
+                if (_stopped)
+                    break;
+
+            } catch(nut::NutException & e) {
+                emit error(QString::fromLatin1(e.str().data(), e.str().size()));
+                qDebug() << QString::fromLatin1(e.str().data(), e.str().size());
+                break;
             }
-        } catch(nut::NutException & e) {
-            emit error(QString::fromLatin1(e.str().data(), e.str().size()));
-            qDebug() << QString::fromLatin1(e.str().data(), e.str().size());
-        }
-        catch(std::exception & e) {
-            qDebug() << QString::fromLatin1(e.what());
-        }
-        catch(...) {
-            qDebug() << "Unknown error";
+            catch(std::exception & e) {
+                qDebug() << QString::fromLatin1(e.what());
+                break;
+            }
+            catch(...) {
+                qDebug() << "Unknown error";
+                break;
+            }
         }
         client.disconnect();
         while (client.isConnected());

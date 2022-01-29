@@ -13,6 +13,7 @@ class NetworkThread : public QThread
     Q_OBJECT
 public:
     explicit NetworkThread(QObject *parent = nullptr);
+    ~NetworkThread();
     bool isConnected() const;
     void updateKnownDevices(nut::TcpClient & client, std::list<std::string> & knownDevices);
 
@@ -28,6 +29,7 @@ signals:
     void error(const QString & what);
     void deviceAdded(const QString & name, const QString & description);
     void deviceRemoved(const QString & name);
+    void deleted(const QString & host);
 protected:
     void run() override;
 private:

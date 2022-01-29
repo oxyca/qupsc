@@ -30,6 +30,11 @@ void NutSocket::disconnect()
     _socket.disconnect();
 }
 
+void NutSocket::abort()
+{
+
+}
+
 bool NutSocket::isConnected() const
 {
     return _socket.state() != QAbstractSocket::UnconnectedState;

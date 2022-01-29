@@ -8,7 +8,7 @@ set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(CMAKE_BINARY_DIR ../build)
@@ -59,6 +59,8 @@ else()
     newconnectiondialog.cpp
     newconnectiondialog.h
     newconnectiondialog.ui
+    threadmanager.cpp
+    threadmanager.h
     ${TS_FILES}
   )
 endif()
