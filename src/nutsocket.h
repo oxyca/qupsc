@@ -21,7 +21,7 @@ public:
     std::string read() override;
     void write(const std::string & s) override;
 private:
-     QTcpSocket _socket;
+     QTcpSocket m_socket;
 };
 
 std::shared_ptr<nut::AbstractSocket> SocketFactory();

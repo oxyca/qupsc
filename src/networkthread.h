@@ -16,12 +16,12 @@ public:
     explicit NetworkThread(QObject *parent = nullptr);
     ~NetworkThread();
     bool isConnected() const;
-    void abort();
 public slots:
     bool start(const QString & host, quint16 port, quint16 pollingInterval);
     void stop();
     void refresh();
     void pause();
+    void abort();
 signals:
     void connecting();
     void connected();

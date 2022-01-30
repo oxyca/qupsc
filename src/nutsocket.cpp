@@ -16,10 +16,10 @@ NutSocket::~NutSocket()
 
 void NutSocket::connect(const std::string &host, int port)
 {
-    _socket.connectToHost(QString::fromUtf8(host.data(), host.size()), port);
-    if (!_socket.waitForConnected()) {
-        qDebug() << "Connection failed: " << _socket.errorString();
-        throw nut::IOException("Connection failed: " + _socket.errorString().toStdString());
+    m_socket.connectToHost(QString::fromUtf8(host.data(), host.size()), port);
+    if (!m_socket.waitForConnected()) {
+        qDebug() << "Connection failed: " << m_socket.errorString();
+        throw nut::IOException("Connection failed: " + m_socket.errorString().toStdString());
     } else {
         qDebug("Connected");
     }
@@ -27,36 +27,36 @@ void NutSocket::connect(const std::string &host, int port)
 
 void NutSocket::disconnect()
 {
-    _socket.disconnect();
+    m_socket.close();
 }
 
 void NutSocket::abort()
 {
-    _socket.abort();
+    m_socket.close();
 }
 
 bool NutSocket::isConnected() const
 {
-    return _socket.state() != QAbstractSocket::UnconnectedState;
+    return m_socket.state() != QAbstractSocket::UnconnectedState;
 }
 
 size_t NutSocket::read(void *buf, size_t sz)
 {
-    _socket.waitForReadyRead();
-    return _socket.read(reinterpret_cast<char*>(buf), sz);
+    m_socket.waitForReadyRead();
+    return m_socket.read(reinterpret_cast<char*>(buf), sz);
 }
 
 size_t NutSocket::write(const void *buf, size_t sz)
 {
-    return _socket.write(reinterpret_cast<const char*>(buf), sz);
+    return m_socket.write(reinterpret_cast<const char*>(buf), sz);
 }
 
 std::string NutSocket::read()
 {
     char buf[512];
     int l = 0;
-    _socket.waitForReadyRead();
-    l = _socket.readLine(buf, 512);
+    m_socket.waitForReadyRead();
+    l = m_socket.readLine(buf, 512);
     if (l >= 0) {
         buf[l-1] = 0;
         return std::string(buf);

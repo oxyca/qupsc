@@ -71,6 +71,7 @@ void NetworkThread::run()
     std::list<std::string> knownDevices;
     while (!m_stopped) {
         m_client.reset();
+        m_client = std::shared_ptr<nut::TcpClient>(new nut::TcpClient());
         while (!m_stopped) {
             try {
                 emit connecting();
@@ -80,7 +81,8 @@ void NetworkThread::run()
                 m_reload = false;
                 updateKnownDevices(knownDevices);
                 emit waiting();
-
+                if (m_client->isConnected())
+                    m_client->disconnect();
                 emit idle();
                 do {
                     std::unique_lock lk(m_m);
@@ -104,9 +106,9 @@ void NetworkThread::run()
                 qDebug() << "Unknown error";
                 break;
             }
+            if (m_client->isConnected())
+                m_client->disconnect();
         }
-        if (m_client->isConnected())
-            m_client->disconnect();
         emit disconnected();
     }
     deleteLater();
