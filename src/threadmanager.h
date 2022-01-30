@@ -12,11 +12,15 @@ class ThreadManager : public QObject
 {
     Q_OBJECT
 public:
-    explicit ThreadManager(QObject *parent = nullptr);
+    ThreadManager(QObject *parent, uint16_t pollingInterval);
     void newThread(const QString & address, uint16_t port);
 signals:
+    void hostRemoved(const QString & address);
+private slots:
+    void threadDeleted(const QString & host);
 private:
-    std::map<QString, NetworkThread *> _threads;
+    std::map<QString, NetworkThread *> m_threads;
+    uint16_t m_pollingInterval;
 };
 
 }

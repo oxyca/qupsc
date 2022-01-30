@@ -32,7 +32,7 @@ void NutSocket::disconnect()
 
 void NutSocket::abort()
 {
-
+    _socket.abort();
 }
 
 bool NutSocket::isConnected() const
