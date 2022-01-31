@@ -4,6 +4,7 @@
 #include <nutclient.h>
 #include <QTcpSocket>
 #include <memory>
+#include <condition_variable>
 
 namespace engine {
 
@@ -21,8 +22,11 @@ public:
     std::string read() override;
     void write(const std::string & s) override;
 private:
+    /*
+     * This is a replacement for waitForReadyRead() which fails to worl reliably on some platforms.
+     */
+    void waitForBytesAvailable();
      QTcpSocket m_socket;
-     bool m_newData;
 };
 
 std::shared_ptr<nut::AbstractSocket> SocketFactory();

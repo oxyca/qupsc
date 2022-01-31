@@ -7,7 +7,6 @@ namespace  engine {
 
 NutSocket::NutSocket()
 {
-    QTcpSocket::connect(&m_socket, &QTcpSocket::readyRead, [&](){m_newData = true;});
 }
 
 NutSocket::~NutSocket()
@@ -56,13 +55,7 @@ std::string NutSocket::read()
 {
     char buf[512];
     int l = 0;
-    m_newData = false;
-    while (m_newData == false) {
-        QApplication::processEvents();
-        if (m_socket.bytesAvailable() > 0)
-            m_newData = true;
-    }
-    //m_socket.waitForReadyRead(1000);
+    waitForBytesAvailable();
     l = m_socket.readLine(buf, 512);
     if (l >= 0) {
         buf[l-1] = 0;
@@ -85,6 +78,13 @@ void NutSocket::write(const std::string &s)
         if (bw == 0)
             throw nut::IOException("Writing string failed");
         nextPos += bw;
+    }
+}
+
+void NutSocket::waitForBytesAvailable()
+{
+    while (m_socket.bytesAvailable() == 0 && m_socket.state() == QAbstractSocket::ConnectedState) {
+        QApplication::processEvents();
     }
 }
 
