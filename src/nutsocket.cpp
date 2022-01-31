@@ -1,12 +1,13 @@
 #include "nutsocket.h"
 #include <QString>
 #include <QDebug>
+#include <QApplication>
 
 namespace  engine {
 
 NutSocket::NutSocket()
 {
-
+    QTcpSocket::connect(&m_socket, &QTcpSocket::readyRead, [&](){m_newData = true;});
 }
 
 NutSocket::~NutSocket()
@@ -55,7 +56,13 @@ std::string NutSocket::read()
 {
     char buf[512];
     int l = 0;
-    m_socket.waitForReadyRead();
+    m_newData = false;
+    while (m_newData == false) {
+        QApplication::processEvents();
+        if (m_socket.bytesAvailable() > 0)
+            m_newData = true;
+    }
+    //m_socket.waitForReadyRead(1000);
     l = m_socket.readLine(buf, 512);
     if (l >= 0) {
         buf[l-1] = 0;

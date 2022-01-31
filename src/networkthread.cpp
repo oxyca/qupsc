@@ -11,7 +11,7 @@ NetworkThread::NetworkThread(QObject *parent) : QThread(parent)
 
 NetworkThread::~NetworkThread()
 {
-    emit deleted(_host);
+    emit deleted(m_host);
 }
 
 void NetworkThread::abort()
@@ -24,8 +24,8 @@ bool NetworkThread::start(const QString &host, quint16 port, quint16 pollingInte
 {
     if (isRunning()) return false;
     m_stopped = false;
-    _host = host;
-    _port = port;
+    m_host = host;
+    m_port = port;
     m_pollingInterval = pollingInterval;
     QThread::start();
     return true;
@@ -33,8 +33,8 @@ bool NetworkThread::start(const QString &host, quint16 port, quint16 pollingInte
 
 void NetworkThread::stop()
 {
-    std::lock_guard lk(m_m);
-    m_stopped = true;
+    {std::lock_guard lk(m_m);
+    m_stopped = true;}
     m_cv.notify_all();
 }
 
@@ -75,7 +75,7 @@ void NetworkThread::run()
         while (!m_stopped) {
             try {
                 emit connecting();
-                m_client->connect(_host.toStdString(), _port);
+                m_client->connect(m_host.toStdString(), m_port);
                 emit connected();
                 emit waiting();
                 m_reload = false;
@@ -88,7 +88,11 @@ void NetworkThread::run()
                     std::unique_lock lk(m_m);
                     if (m_stopped || m_reload)
                         break;
-                    m_cv.wait_for(lk, m_pollingInterval*1000ms, [this]{return m_stopped || m_reload;});
+                    m_cv.wait_for(lk, m_pollingInterval*1000ms, [this]{
+                        qDebug() << "Lambda called!";
+                        return m_stopped || m_reload;
+
+                    });
                 } while (m_paused);
                 if (m_paused)
                     emit paused(false);
@@ -109,9 +113,8 @@ void NetworkThread::run()
             if (m_client->isConnected())
                 m_client->disconnect();
         }
-        emit disconnected();
+        emit removeMe(m_host);
     }
-    deleteLater();
-}
+ }
 
 }

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.1" language="qupsc_ru_RU">
+<TS version="2.1" language="ru_RU">
 <context>
     <name>Dialog</name>
     <message>
@@ -37,7 +37,7 @@
     </message>
     <message>
         <location filename="newconnectiondialog.ui" line="28"/>
-        <source>host</source>
+        <source>192.168.1.8</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

@@ -25,7 +25,7 @@ public slots:
 signals:
     void connecting();
     void connected();
-    void disconnected();
+    void removeMe(const QString & host);
     void waiting();
     void idle();
     void paused(bool b);
@@ -37,8 +37,8 @@ protected:
     void run() override;
 private:
     void updateKnownDevices(std::list<std::string> & knownDevices);
-    QString _host;
-    quint16 _port;
+    QString m_host;
+    quint16 m_port;
     quint16 m_pollingInterval;
     bool m_stopped = false;
     bool m_paused = false;
