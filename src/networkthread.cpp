@@ -1,5 +1,6 @@
 #include "networkthread.h"
 #include <list>
+#include <set>
 #include <QDebug>
 
 namespace engine {
@@ -51,24 +52,39 @@ void NetworkThread::pause()
     emit paused(m_paused);
 }
 
-void NetworkThread::updateKnownDevices(std::list<std::string> & knownDevices)
+void NetworkThread::updateKnownDevices(std::list<Device> &knownDevices)
 {
-    auto devices = m_client->getDeviceNames();
-    for (const auto &device: devices) {
-        if (std::find(knownDevices.begin(), knownDevices.end(), device) == knownDevices.end()) {
-            knownDevices.push_back(device);
-            auto description = m_client->getDeviceDescription(device);
-            emit deviceAdded(QString::fromLatin1(device.data(), device.size()),
-                             QString::fromLatin1(description.data(), description.size()));
-        }
+    auto devices = getDevices();
+    std::list<Device> added_devs;
+    std::list<Device> removed_devs;
+    std::set_difference(devices.begin(), devices.end(), knownDevices.begin(), knownDevices.end(), std::inserter(added_devs, added_devs.begin()));
+    std::set_difference(devices.begin(), devices.end(), knownDevices.begin(), knownDevices.end(), std::inserter(removed_devs, removed_devs.begin()));
+    for (auto & device : added_devs) {
+        emit deviceAdded(device.name, device.description);
+        knownDevices.push_back(device);
+        qDebug() << "device added: " << device.name;
     }
+    for (const auto & device : removed_devs)
+        emit deviceRemoved(device.name);
+}
+
+std::list<Device> NetworkThread::getDevices()
+{
+    std::list<Device> result;
+    for (const auto & device : m_client->getDevices()) {
+        Device d;
+        d.name = QString::fromLatin1(device.getName().c_str());
+        d.description = QString::fromLatin1(const_cast<nut::Device &>(device).getDescription().c_str());
+        result.push_back(d);
+    }
+    return result;
 }
 
 using namespace std::chrono_literals;
 
 void NetworkThread::run()
 {
-    std::list<std::string> knownDevices;
+    std::list<Device> knownDevices;
     while (!m_stopped) {
         m_client.reset();
         m_client = std::shared_ptr<nut::TcpClient>(new nut::TcpClient());
@@ -89,7 +105,6 @@ void NetworkThread::run()
                     if (m_stopped || m_reload)
                         break;
                     m_cv.wait_for(lk, m_pollingInterval*1000ms, [this]{
-                        qDebug() << "Lambda called!";
                         return m_stopped || m_reload;
 
                     });
