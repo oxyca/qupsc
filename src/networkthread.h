@@ -9,16 +9,6 @@
 
 namespace engine {
 
-struct Device
-{
-    QString name;
-    QString description;
-    bool operator <(const Device & r) {
-        return this->name < r.name;
-    }
-};
-
-
 class NetworkThread : public QThread
 {
     Q_OBJECT
@@ -46,8 +36,7 @@ signals:
 protected:
     void run() override;
 private:
-    void updateKnownDevices(std::list<Device> & knownDevices);
-    std::list<Device> getDevices();
+    void updateKnownDevices(std::list<nut::Device> & knownDevices);
     QString m_host;
     quint16 m_port;
     quint16 m_pollingInterval;

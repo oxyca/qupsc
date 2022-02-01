@@ -52,39 +52,27 @@ void NetworkThread::pause()
     emit paused(m_paused);
 }
 
-void NetworkThread::updateKnownDevices(std::list<Device> &knownDevices)
+void NetworkThread::updateKnownDevices(std::list<nut::Device> &knownDevices)
 {
-    auto devices = getDevices();
-    std::list<Device> added_devs;
-    std::list<Device> removed_devs;
+    auto devices = m_client->getDevices();
+    std::list<nut::Device> added_devs;
+    std::list<nut::Device> removed_devs;
     std::set_difference(devices.begin(), devices.end(), knownDevices.begin(), knownDevices.end(), std::inserter(added_devs, added_devs.begin()));
     std::set_difference(devices.begin(), devices.end(), knownDevices.begin(), knownDevices.end(), std::inserter(removed_devs, removed_devs.begin()));
-    for (auto & device : added_devs) {
-        emit deviceAdded(device.name, device.description);
+    for (const auto & device : added_devs) {
+        emit deviceAdded(QString::fromLatin1(device.getName().c_str()), QString::fromLatin1(const_cast<nut::Device &>(device).getDescription().c_str()));
         knownDevices.push_back(device);
-        qDebug() << "device added: " << device.name;
+        qDebug() << "device added:" << QString::fromLatin1(device.getName().c_str());
     }
     for (const auto & device : removed_devs)
-        emit deviceRemoved(device.name);
-}
-
-std::list<Device> NetworkThread::getDevices()
-{
-    std::list<Device> result;
-    for (const auto & device : m_client->getDevices()) {
-        Device d;
-        d.name = QString::fromLatin1(device.getName().c_str());
-        d.description = QString::fromLatin1(const_cast<nut::Device &>(device).getDescription().c_str());
-        result.push_back(d);
-    }
-    return result;
+        emit deviceRemoved(QString::fromLatin1(device.getName().c_str()));
 }
 
 using namespace std::chrono_literals;
 
 void NetworkThread::run()
 {
-    std::list<Device> knownDevices;
+    std::list<nut::Device> knownDevices;
     while (!m_stopped) {
         m_client.reset();
         m_client = std::shared_ptr<nut::TcpClient>(new nut::TcpClient());
